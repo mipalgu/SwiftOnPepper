@@ -17,11 +17,6 @@ RUN apt-get -y install git git-svn build-essential libc++-dev clang bmake pmake 
 
 RUN mkdir -p /usr/local/var \
     && git clone https://github.com/kylef/swiftenv.git /usr/local/var/swiftenv \
-    && [ ! -e /usr/local/var/swiftenv/versions ] || chown `basename $HOME` /usr/local/var/swiftenv/versions \
-    && bash -c 'echo export SWIFTENV_ROOT="/usr/local/var/swiftenv" >/etc/profile.d/swiftenv.sh' \
-    && echo 'export PATH="$SWIFTENV_ROOT/bin:$PATH"' | $SUDO tee -a /etc/profile.d/swiftenv.sh \
-    && echo 'eval "$(swiftenv init -)"' | $SUDO tee -a /etc/profile.d/swiftenv.sh \
-    && echo >>/tmp/final.msg '' \
-    && echo >>/tmp/final.msg ' *** To use Swift, either restart, log out/in or run:' \
-    && echo >>/tmp/final.msg '' \
-    && echo >>/tmp/final.msg 'source /etc/profile.d/swiftenv.sh'
+    && bash -c 'echo export SWIFTENV_ROOT="/usr/local/var/swiftenv" >> .bashrc' \
+    && echo 'export PATH="$SWIFTENV_ROOT/bin:$PATH"' | tee -a .bashrc \
+    && echo 'eval "$(swiftenv init -)"' | tee -a .bashrc
