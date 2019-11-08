@@ -26,7 +26,6 @@ RUN echo "host git.mipal.net" >> /root/.ssh/config && \
   echo "  HostName git.mipal.net" >> /root/.ssh/config && \
   echo "  IdentityFile /root/.ssh/id_rsa" >> /root/.ssh/config && \
   echo "  User ${SSH_USER}" >> /root/.ssh/config
-RUN cat /root/.ssh/config
 RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts
 
