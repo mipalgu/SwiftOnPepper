@@ -14,9 +14,30 @@ RUN apt-get -y install git git-svn build-essential libc++-dev clang bmake pmake 
 #
 # Install SwiftEnv
 #
+ARG SWIFTENV_ROOT_ARG=/usr/local/var/swiftenv
+ENV SWIFTENV_ROOT_ARG=$SWIFTENV_ROOT_ARG
 
 RUN mkdir -p /usr/local/var \
     && git clone https://github.com/kylef/swiftenv.git /usr/local/var/swiftenv \
-    && bash -c 'echo export SWIFTENV_ROOT="/usr/local/var/swiftenv" >> .bashrc' \
+    && bash -c 'echo export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" >> .bashrc' \
     && echo 'export PATH="$SWIFTENV_ROOT/bin:$PATH"' | tee -a .bashrc \
     && echo 'eval "$(swiftenv init -)"' | tee -a .bashrc
+
+#
+# Install Swift
+#
+
+ARG SWIFTVER=5.1
+ENV SWIFTVER=$SWIFTVER
+
+RUN bash -c '\
+    SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv install $SWIFTVER \
+    && SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv global $SWIFTVER'
+
+
+
+
+
+
+
+
