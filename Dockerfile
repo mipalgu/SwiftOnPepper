@@ -34,10 +34,28 @@ RUN bash -c '\
     SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv install $SWIFTVER \
     && SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv global $SWIFTVER'
 
+#
+# Setup ssh keys.
+#
+ARG SSH_USER
+ENV SSH_USER=$SSH_USER
+RUN mkdir -p /root/.ssh
+COPY id_rsa /root/.ssh/
+COPY id_rsa.pub /root/.ssh/
+RUN rm -f /root/.ssh/config
+RUN echo "host git.mipal.net" >> /root/.ssh/config && \
+  echo "  HostName git.mipal.net" >> /root/.ssh/config && \
+  echo "  IdentityFile /root/.ssh/id_rsa" >> /root/.ssh/config && \
+  echo "  User ${SSH_USER}" >> /root/.ssh/config
+RUN rm -f /root/.ssh/known_hosts
+RUN touch /root/.ssh/known_hosts
+RUN ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts
 
-
-
-
-
-
-
+#
+# Setup source tree
+#
+RUN mkdir -p /root/src
+RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift.git
+COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
+RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
+RUN cd /root/src/nao_swift/pepper && ./setup-sources.sh
