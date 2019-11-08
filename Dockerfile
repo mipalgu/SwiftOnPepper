@@ -1,5 +1,5 @@
 # Kudos to DOROWU for his amazing VNC 18.04 LXDE image
-FROM dorowu/ubuntu-desktop-lxde-vnc:bionic AS mipal-swift
+FROM dorowu/ubuntu-desktop-lxde-vnc:bionic AS mipal-pepper-swift-crosstoolchain-build
 LABEL maintainer "info@mipal.net.au"
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y git curl wget dirmngr
