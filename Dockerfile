@@ -59,3 +59,14 @@ RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift.git
 COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
 RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
 RUN cd /root/src/nao_swift/pepper && ./setup-sources.sh
+
+#
+# Configure git repo.
+#
+ARG GIT_USERS_NAME=root
+ENV GIT_USERS_NAME=$GIT_USERS_NAME
+ARG GIT_USERS_EMAIL=root@pepper-swift
+ENV GIT_USERS_EMAIL=$GIT_USERS_EMAIL
+RUN cd /root/src/nao_swift && \
+    git config user.name "$GIT_USERS_NAME" && \
+    git config user.email "$GIT_USERS_EMAIL"
