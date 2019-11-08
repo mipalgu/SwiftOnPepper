@@ -33,8 +33,8 @@ RUN ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts
 #
 # Setup source tree
 #
-RUN mkdir -p src
-RUN cd src
-RUN git clone ssh://git.mipal.net/git/nao_swift.git
-RUN cd nao_swift/pepper
+RUN mkdir -p /root/src
+RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift.git
 COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
+RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
+RUN cd /root/src/nao_swift/pepper && ./setup-sources.sh
