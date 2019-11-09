@@ -44,6 +44,7 @@ ARG SSH_USER
 ENV SSH_USER=$SSH_USER
 RUN mkdir -p /root/.ssh
 COPY id_rsa /root/.ssh/
+RUN chmod 600 /root/.ssh/id_rsa
 COPY id_rsa.pub /root/.ssh/
 RUN rm -f /root/.ssh/config
 RUN echo "host git.mipal.net" >> /root/.ssh/config && \
