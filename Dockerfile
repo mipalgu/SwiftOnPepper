@@ -62,7 +62,7 @@ RUN mkdir -p /root/src
 RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift.git
 COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
 RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
-RUN cd /root/src/nao_swift/pepper && ./setup-sources.sh
+RUN cd /root/src/nao_swift/pepper && ./setup-sources.sh -s "$SWIFTVER"
 
 #
 # Configure git repo.
@@ -74,3 +74,12 @@ ENV GIT_USERS_EMAIL=$GIT_USERS_EMAIL
 RUN cd /root/src/nao_swift && \
     git config user.name "$GIT_USERS_NAME" && \
     git config user.email "$GIT_USERS_EMAIL"
+
+#
+# Build swift.
+#
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build.sh -j8 -l -s "$SWIFTVER"
