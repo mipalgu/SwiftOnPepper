@@ -27,17 +27,6 @@ RUN cp /root/.bashrc /home/ubuntu/
 RUN cp /root/.profile /home/ubuntu/
 
 #
-# Install Swift
-#
-
-ARG SWIFTVER=5.1
-ENV SWIFTVER=$SWIFTVER
-
-RUN bash -c '\
-    SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv install $SWIFTVER \
-    && SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv global $SWIFTVER'
-
-#
 # Setup ssh keys.
 #
 ARG SSH_USER
@@ -62,7 +51,6 @@ RUN mkdir -p /root/src
 RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift.git
 COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
 RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
-RUN cd /root/src/nao_swift/pepper && ./setup-sources.sh -s "$SWIFTVER"
 
 #
 # Configure git repo.
@@ -76,10 +64,83 @@ RUN cd /root/src/nao_swift && \
     git config user.email "$GIT_USERS_EMAIL"
 
 #
+# Install Swift
+#
+
+ARG SWIFTVER=5.1
+ENV SWIFTVER=$SWIFTVER
+
+RUN bash -c '\
+    SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv install $SWIFTVER \
+    && SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv global $SWIFTVER'
+RUN cd /root/src/nao_swift/pepper && ./setup-sources.sh -s "$SWIFTVER"
+
+#
 # Build swift.
 #
 RUN cd /root/src/nao_swift/pepper && \
     export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
     export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
     eval "$(swiftenv init -)" && \
-    ./build.sh -j8 -l -s "$SWIFTVER"
+    ./setup.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./setup-sources.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./setup-sysroot.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-cross-binutils.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-libuuid.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-icu.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-host-llvm.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-target-llvm.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && git pull
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-swift.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-libdispatch.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-foundation.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./build-xctest.sh -j8 -l -s "$SWIFTVER"
+RUN cd /root/src/nao_swift/pepper && \
+    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \
+    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \
+    eval "$(swiftenv init -)" && \
+    ./finalise.sh -j8 -l -s "$SWIFTVER"
