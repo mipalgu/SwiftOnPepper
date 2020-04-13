@@ -13,7 +13,7 @@ cd /usr/local && tar -xzvf ~/Downloads/naoqi-sdk-2.5.5.5-pepper-mac64.tar.gz
 
 2. Try out your new toolchain:
 ```bash
-cd ~/src/MiPal/GUNao/posix/tutoriak/hello-swift
+cd ~/src/MiPal/GUNao/posix/tutorials/hello-swift
 bmake robot TARGET=pepper
 ```
 
@@ -105,7 +105,7 @@ sed -e "s@header \".*/usr/@header \"/usr/local/pepper/naoqi-sdk-2.5.5.5-mac64/cr
 ```
 13. Try out your new toolchain:
 ```bash
-cd ~/src/MiPal/GUNao/posix/tutoriak/hello-swift
+cd ~/src/MiPal/GUNao/posix/tutorials/hello-swift
 bmake robot TARGET=pepper
 ```
 
