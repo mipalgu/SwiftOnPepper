@@ -55,9 +55,7 @@ README.md resides.
 4. In a separate terminal: `./bash.sh`
 5. Copy all the build products:
 ```bash
-cd /root/src/nao_swift/pepper
-scp ctc-mipal.tar.gz <your_username>@<your_hostname>:~/Downloads/
-scp crosstoolchain.tar.gz <your_username>@<your_hostname>:~/Downloads/
+./copy.sh ~/Downloads
 ```
 6. Create a pepper folder in /usr/local:
 ```bash
