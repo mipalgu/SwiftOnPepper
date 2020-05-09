@@ -2,8 +2,6 @@
 FROM dorowu/ubuntu-desktop-lxde-vnc:bionic AS mipal-pepper-swift-crosstoolchain-build
 LABEL maintainer "info@mipal.net.au"
 
-ARG PARALLEL=1
-
 RUN apt-get update && apt-get upgrade -y && apt-get install -y git curl wget dirmngr
 
 #
@@ -20,7 +18,7 @@ RUN mkdir -p /root/src/cmake
 RUN cd /root/src/cmake && wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.15.2.tar.gz
 RUN cd /root/src/cmake && tar -xzvf cmake-3.15.2.tar.gz
 RUN mkdir -p /root/src/cmake/build
-RUN cd /root/src/cmake/build && CC=/usr/bin/clang CXX=/usr/bin/clang++ ../cmake-3.15.2/configure --prefix=/usr/local && make -j$PARALLEL && make install
+RUN cd /root/src/cmake/build && CC=/usr/bin/clang CXX=/usr/bin/clang++ ../cmake-3.15.2/configure --prefix=/usr/local && make && make install
 RUN rm -rf /root/src
 
 #
@@ -39,30 +37,16 @@ RUN cp /root/.bashrc /home/ubuntu/
 RUN cp /root/.profile /home/ubuntu/
 
 #
-# Setup ssh keys.
-#
-ARG SSH_USER
-ENV SSH_USER=$SSH_USER
-RUN mkdir -p /root/.ssh
-COPY id_rsa /root/.ssh/
-RUN chmod 600 /root/.ssh/id_rsa
-COPY id_rsa.pub /root/.ssh/
-RUN rm -f /root/.ssh/config
-RUN echo "host git.mipal.net" >> /root/.ssh/config && \
-  echo "  HostName git.mipal.net" >> /root/.ssh/config && \
-  echo "  IdentityFile /root/.ssh/id_rsa" >> /root/.ssh/config && \
-  echo "  User ${SSH_USER}" >> /root/.ssh/config
-RUN rm -f /root/.ssh/known_hosts
-RUN touch /root/.ssh/known_hosts
-RUN ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts
-
-#
 # Setup source tree
 #
 RUN mkdir -p /root/src
-RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift.git
+COPY nao_swift /root/src/
+#RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift.git
 COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
 RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
+
+ARG DEBUG=0
+ENV DEBUG=$DEBUG
 
 #
 # Configure git repo.
@@ -71,20 +55,38 @@ ARG GIT_USERS_NAME=root
 ENV GIT_USERS_NAME=$GIT_USERS_NAME
 ARG GIT_USERS_EMAIL=root@pepper-swift
 ENV GIT_USERS_EMAIL=$GIT_USERS_EMAIL
-RUN cd /root/src/nao_swift && \
+RUN if [ "$DEBUG" = "1" ] ; then cd /root/src/nao_swift && \
     git config user.name "$GIT_USERS_NAME" && \
-    git config user.email "$GIT_USERS_EMAIL"
+    git config user.email "$GIT_USERS_EMAIL"; fi
+
+#
+# Setup ssh keys.
+#
+ARG SSH_USER
+ENV SSH_USER=$SSH_USER
+RUN mkdir -p /root/.ssh
+COPY .build/* /root/.ssh/
+RUN if [ "$DEBUG" = "1" ] ; then chmod 600 /root/.ssh/*; fi
+RUN if [ "$DEBUG" = "1" ] ; then rm -f /root/.ssh/config; fi
+RUN if [ "$DEBUG" = "1" ] ; then echo "host git.mipal.net" >> /root/.ssh/config && \
+  echo "  HostName git.mipal.net" >> /root/.ssh/config && \
+  echo "  IdentityFile /root/.ssh/id_rsa" >> /root/.ssh/config && \
+  echo "  User ${SSH_USER}" >> /root/.ssh/config; fi
+RUN rm -f /root/.ssh/known_hosts
+RUN touch /root/.ssh/known_hosts
+RUN if [ "$DEBUG" = "1" ] ; then ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts; fi
 
 #
 # Install Swift
 #
-
 ARG SWIFTVER=5.1
 ENV SWIFTVER=$SWIFTVER
 
 RUN bash -c '\
     SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv install $SWIFTVER \
     && SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv global $SWIFTVER'
+
+ARG PARALLEL=1
 
 #
 # Build swift.
