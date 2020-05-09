@@ -1,0 +1,3 @@
+[submodule "nao_swift"]
+	path = nao_swift
+	url = ssh://git.mipal.net/git/nao_swift.git
