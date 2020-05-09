@@ -27,7 +27,7 @@ RUN cd /root/src/nao_swift && \
 ARG SSH_USER
 ENV SSH_USER=$SSH_USER
 RUN mkdir -p /root/.ssh
-COPY .build/* /root/.ssh/
+COPY id_rsa /root/.ssh/
 RUN chmod 600 /root/.ssh/*; fi
 RUN rm -f /root/.ssh/config; fi
 RUN echo "host git.mipal.net" >> /root/.ssh/config && \

@@ -1,6 +1,8 @@
 #! /bin/sh
 set -e
 
+source tags.sh
+
 PARALLEL=1
 SWIFT_VERSION=5.2
 SSH_USERNAME=`whoami`
@@ -44,18 +46,12 @@ WD=`pwd`
 BUILD_DIR="$WD/.build"
 
 mkdir -p $BUILD_DIR
-if [[ "$DEBUG" == "1" ]]
-then
-    cp id_rsa* $BUILD_DIR/
-fi
 
 if [ ! -f nao_swift/pepper/build.sh ]
 then
     git submodule update --init --recursive
     git submodule foreach --recursive 'git fetch --tags'
 fi
-
-source tags.sh
 
 if [ -z ${CHECKOUT_VERSION+x} ]
 then
@@ -64,7 +60,7 @@ fi
 
 function checkout_submodule() {
     local current_tag=`fetch_current_tag`
-    local previous_tag=`fetch_previous_tag`
+    local previous_tag=`fetch_previous_tag $BUILD_DIR/.swift-version`
     if [[ "$current_tag" == "none" || ("$current_tag" != "$previous_tag") ]]
     then
         `cd $WD/nao_swift && git checkout $CHECKOUT_VERSION`

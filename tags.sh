@@ -75,7 +75,8 @@ function fetch_current_tag() {
 }
 
 function fetch_previous_tag() {
-    local previous_tag=`cat $BUILD_DIR/.swift-version 2>/dev/null`
+    local cacheFile=$1
+    local previous_tag=`cat $cacheFile 2>/dev/null`
     if [ "$previous_tag" == "" ]
     then
         echo "none"
