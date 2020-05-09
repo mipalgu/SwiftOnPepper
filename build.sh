@@ -8,7 +8,7 @@ DEBUG=0
 
 usage() { echo "Usage: $0 [-c <nao_swift tag>] [-j<value>] [-l] -s <swift-version> -u <ssh_username>"; }
 
-while getopts "c:hj:ls:t:u:" o; do
+while getopts "c:dhj:ls:t:u:" o; do
     case "${o}" in
         c)
             CHECKOUT_VERSION=${OPTARG}
