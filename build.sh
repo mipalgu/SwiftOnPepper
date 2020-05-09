@@ -48,8 +48,7 @@ fi
 
 if [ ! -f nao_swift/pepper/build.sh ]
 then
-    >&2 echo "Make sure you initialise the submodule: 'git submodule update --init --recursive'"
-    exit 1
+    git submodule update --init --recursive
 fi
 
 source tags.sh
