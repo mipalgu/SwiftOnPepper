@@ -67,7 +67,6 @@ then
 fi
 
 previous_tag=`fetch_previous_tag`
-echo "previous_tag: $previous_tag"
 if [[ "$previous_tag" != "$CHECKOUT_VERSION" ]]
 then
     echo "pwd: `pwd`"
