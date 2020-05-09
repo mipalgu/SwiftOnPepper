@@ -6,9 +6,9 @@ SWIFT_VERSION=5.2
 SSH_USERNAME=`whoami`
 DEBUG=0
 
-usage() { echo "Usage: $0 [-j<value>] -s <swift-version> -u <ssh_username>"; }
+usage() { echo "Usage: $0 [-c <nao_swift tag>] [-j<value>] [-l] -s <swift-version> -u <ssh_username>"; }
 
-while getopts "c:hj:ls:t:" o; do
+while getopts "c:hj:ls:t:u:" o; do
     case "${o}" in
         c)
             CHECKOUT_VERSION=${OPTARG}
