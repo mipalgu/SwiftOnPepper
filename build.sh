@@ -52,6 +52,7 @@ fi
 if [ ! -f nao_swift/pepper/build.sh ]
 then
     git submodule update --init --recursive
+    git submodule foreach --recursive 'git fetch --tags'
 fi
 
 source tags.sh
