@@ -40,8 +40,8 @@ RUN cp /root/.profile /home/ubuntu/
 # Setup source tree
 #
 RUN mkdir -p /root/src
-COPY nao_swift /root/src/
-#RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift.git
+COPY .build/nao_swift.tar.gz /root/src/
+RUN cd /root/src && tar -xzf nao_swift.tar.gz
 COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
 RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
 
