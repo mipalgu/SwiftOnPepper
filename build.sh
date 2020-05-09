@@ -85,8 +85,8 @@ while read p; do
     if [[ "$first_word" == "source" ]]
     then
         echo "RUN cd /root/src/nao_swift/pepper && \\" >> $WD/Dockerfile
-        echo "    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
-        echo "    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \\" >> $WD/Dockerfile
+        echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
+        echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
         echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
         echo "    ./$second_word -j$PARALLEL$LIBCXXFLAG -s $SWIFT_VERSION" >> $WD/Dockerfile
     fi
