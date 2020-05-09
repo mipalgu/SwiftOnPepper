@@ -73,7 +73,7 @@ then
     echo "pwd: `pwd`"
     rm -f $BUILD_DIR/nao_swift.tar.gz
     tar -czf $BUILD_DIR/nao_swift.tar.gz nao_swift
-    echo "$SWIFT_VERSION" > $BUILD_DIR/.swift-version
+    echo "$CHECKOUT_VERSION" > $BUILD_DIR/.swift-version
 fi
 
 docker image build --build-arg SSH_USER="$SSH_USERNAME" --build-arg GIT_USERS_NAME="`git config user.name`" --build-arg GIT_USERS_EMAIL="`git config user.email`" --build-arg SWIFTVER="$SWIFT_VERSION" --build-arg PARALLEL=$PARALLEL --build-arg DEBUG="$DEBUG" -t mipal-pepper-swift-crosstoolchain-build .
