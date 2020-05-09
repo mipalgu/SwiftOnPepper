@@ -23,6 +23,9 @@ while getopts "c:hj:ls:t:" o; do
         j)
             PARALLEL=${OPTARG}
             ;;
+        l)
+            LIBCXXFLAG=" -l"
+            ;;
         s)
 	        SWIFT_VERSION=${OPTARG}
 	        ;;
@@ -71,5 +74,21 @@ then
     tar -czf $BUILD_DIR/nao_swift.tar.gz nao_swift
     echo "$CHECKOUT_VERSION" > $BUILD_DIR/.swift-version
 fi
+
+rm -f $BUILD_DIR/Dockerfile.out
+cp $WD/Dockerfile.in Dockerfile
+echo "" >> Dockerfile
+while read p; do
+    first_word=`echo "$p" | cut -f 1 -d " " -`
+    second_word=`echo "$p" | cut -f 2 -d " " -`
+    if [[ "$first_word" == "source" ]]
+    then
+        echo "RUN cd /root/src/nao_swift/pepper && \\" >> $WD/Dockerfile
+        echo "    export SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
+        echo "    export PATH="$SWIFTENV_ROOT/bin:$PATH" && \\" >> $WD/Dockerfile
+        echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
+        echo "    ./$second_word -j$PARALLEL$LIBCXXFLAG -s $SWIFT_VERSION" >> $WD/Dockerfile
+    fi
+done <$WD/nao_swift/pepper/build.sh
 
 docker image build --build-arg SSH_USER="$SSH_USERNAME" --build-arg GIT_USERS_NAME="`git config user.name`" --build-arg GIT_USERS_EMAIL="`git config user.email`" --build-arg SWIFTVER="$SWIFT_VERSION" --build-arg PARALLEL=$PARALLEL --build-arg DEBUG="$DEBUG" -t mipal-pepper-swift-crosstoolchain-build .
