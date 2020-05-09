@@ -2,8 +2,7 @@
 set -e
 
 function difference() {
-    >&2 echo "1: $1, 2: $2"
-    echo "`expr $1 - $2`"
+    echo "`expr $2 - $1`"
 }
 
 function major_version() {
@@ -24,7 +23,7 @@ function major_difference() {
 function minor_difference() {
     local target_minor=$1
     local tag=$2
-    local new_minor_version=`major_version $tag`
+    local new_minor_version=`minor_version $tag`
     echo "`difference $target_minor $new_minor_version`"
 }
 
@@ -36,25 +35,25 @@ function compute_nearest_tag() {
     local found_tag=`echo "$tags" | head -n 1`
     local major_difference=`major_difference $target_major $found_tag`
     local minor_difference=`minor_difference $target_minor $found_tag`
-    if [[ $major_difference > 0 || ($major_difference < 0 && ($minor_difference > 0)) ]]
+    if [[ $major_difference -gt 0 || ($major_difference -lt 0 && ($minor_difference -gt 0)) ]]
     then
         major_difference="-99999"
     fi
     for tag in $tags
     do
-        if [ "$tag" == "$target_version" ]
-        then
-            echo "$target_version"
-            return 0
-        fi
         local new_major_difference=`major_difference $target_major $tag`
         local new_minor_difference=`minor_difference $target_minor $tag`
-        if [[ $new_major_difference < 0 && ($new_major_difference > $major_difference) ]]
+        if [[ "$tag" == "$target_version" || ($new_major_difference == 0 && ($new_minor_difference == 0)) ]]
+        then
+            echo "$tag"
+            return 0
+        fi
+        if [[ $new_major_difference -lt 0 && ($new_major_difference -gt $major_difference) ]]
         then
             found_tag=$tag
             major_difference=$new_major_difference
             minor_difference=$new_minor_difference
-        elif [[ $new_major_difference == $major_difference && ($new_minor_difference > $minor_difference) ]]
+        elif [[ $new_major_difference -eq $major_difference && ($new_minor_difference -lt 0 && ($new_minor_difference -gt $minor_difference)) ]]
         then
             found_tag=$tag
             major_difference=$new_major_difference

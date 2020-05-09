@@ -60,7 +60,6 @@ then
 fi
 
 current_tag=`fetch_current_tag`
-echo "current_tag: $current_tag, CHECKOUT_VERSION: $CHECKOUT_VERSION"
 if [[ "$current_tag" == "none" || ("$current_tag" != "$previous_tag") ]]
 then
     `cd $WD/nao_swift && git checkout $CHECKOUT_VERSION`
@@ -69,7 +68,6 @@ fi
 previous_tag=`fetch_previous_tag`
 if [[ "$previous_tag" != "$CHECKOUT_VERSION" ]]
 then
-    echo "pwd: `pwd`"
     rm -f $BUILD_DIR/nao_swift.tar.gz
     tar -czf $BUILD_DIR/nao_swift.tar.gz nao_swift
     echo "$CHECKOUT_VERSION" > $BUILD_DIR/.swift-version
