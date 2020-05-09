@@ -3,3 +3,4 @@ id_rsa.pub
 ctc-*.zip
 *.tar.gz
 Dockerfile
+.build
