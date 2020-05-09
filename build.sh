@@ -82,13 +82,16 @@ function checkout_submodule() {
 cp $WD/Dockerfile.in Dockerfile
 echo "" >> Dockerfile
 
-ARGS="--build-arg SWIFTVER=\"$SWIFT_VERSION\" --build-arg PARALLEL=\"$PARALLEL\""
+ARGS="--build-arg SWIFTVER=\"$SWIFT_VERSION\" --build-arg PARALLEL=\"$PARALLEL\" --build-arg LIBCXXFLAG=\"$LIBCXXFLAG\""
 
 if [[ "$DEBUG" == 1 ]]
 then
     ARGS="$ARGS --build-arg SSH_USER=\"$SSH_USERNAME\" --build-arg GIT_USERS_NAME=\"`git config user.name`\" --build-arg GIT_USERS_EMAIL=\"`git config user.email`\" --build-arg DEBUG=\"$DEBUG\" --build-arg CHECKOUT_VERSION=\"$CHECKOUT_VERSION\""
     cat Dockerfile.debug >> Dockerfile
-    echo ""
+    echo "" >> Dockerfile
+    echo "ARG PARALLEL=1" >> Dockerfile
+    echo "ARG LIBCXXFLAG=\"\"" >> Dockerfile
+    echo "" >> Dockerfile
     while read p; do
         first_word=`echo "$p" | cut -f 1 -d " " -`
         second_word=`echo "$p" | cut -f 2 -d " " -`
@@ -98,20 +101,21 @@ then
             echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
             echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
             echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
-            echo "    ./$second_word -j$PARALLEL$LIBCXXFLAG -s $SWIFT_VERSION" >> $WD/Dockerfile
+            echo "    ./$second_word -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFT_VERSION" >> $WD/Dockerfile
         fi
     done <$WD/nao_swift/pepper/build.sh
 else
     cat Dockerfile.default >> Dockerfile
-    echo ""
+    echo "" >> Dockerfile
+    echo "ARG PARALLEL=1" >> Dockerfile
+    echo "ARG LIBCXXFLAG=\"\"" >> Dockerfile
+    echo "" >> Dockerfile
     echo "RUN cd /root/src/nao_swift/pepper && \\" >> $WD/Dockerfile
     echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
     echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
     echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
-    echo "    ./build.sh -j$PARALLEL$LIBCXXFLAG -s $SWIFT_VERSION" >> $WD/Dockerfile
+    echo "    ./build.sh -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFT_VERSION" >> $WD/Dockerfile
     checkout_submodule
 fi
 
-echo "$ARGS"
-
-docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build .
+eval "docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build ."
