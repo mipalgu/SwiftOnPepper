@@ -6,7 +6,7 @@ SWIFT_VERSION=5.2
 SSH_USERNAME=`whoami`
 DEBUG=0
 
-usage() { echo "Usage: $0 [-c <nao_swift tag>] [-j<value>] [-l] -s <swift-version> -u <ssh_username>"; }
+usage() { echo "Usage: $0 [-c <nao_swift tag>] [-j<value>] [-l] [-s <swift-version>]"; }
 
 while getopts "c:dhj:ls:t:u:" o; do
     case "${o}" in
@@ -62,26 +62,33 @@ then
     CHECKOUT_VERSION=`compute_nearest_tag $SWIFT_VERSION`
 fi
 
-current_tag=`fetch_current_tag`
-previous_tag=`fetch_previous_tag`
-if [[ "$current_tag" == "none" || ("$current_tag" != "$previous_tag") ]]
-then
-    `cd $WD/nao_swift && git checkout $CHECKOUT_VERSION`
-fi
+function checkout_submodule() {
+    local current_tag=`fetch_current_tag`
+    local previous_tag=`fetch_previous_tag`
+    if [[ "$current_tag" == "none" || ("$current_tag" != "$previous_tag") ]]
+    then
+        `cd $WD/nao_swift && git checkout $CHECKOUT_VERSION`
+    fi
 
-if [[ "$previous_tag" != "$CHECKOUT_VERSION" ]]
-then
-    rm -f $BUILD_DIR/nao_swift.tar.gz
-    tar -czf $BUILD_DIR/nao_swift.tar.gz nao_swift
-    echo "$CHECKOUT_VERSION" > $BUILD_DIR/.swift-version
-fi
+    if [[ "$previous_tag" != "$CHECKOUT_VERSION" ]]
+    then
+        rm -f $BUILD_DIR/nao_swift.tar.gz
+        tar -czf $BUILD_DIR/nao_swift.tar.gz nao_swift
+        echo "$CHECKOUT_VERSION" > $BUILD_DIR/.swift-version
+    fi
+}
 
-rm -f $BUILD_DIR/Dockerfile.out
+
 cp $WD/Dockerfile.in Dockerfile
 echo "" >> Dockerfile
 
+ARGS="--build-arg SWIFTVER=\"$SWIFT_VERSION\" --build-arg PARALLEL=\"$PARALLEL\""
+
 if [[ "$DEBUG" == 1 ]]
 then
+    ARGS="$ARGS --build-arg SSH_USER=\"$SSH_USERNAME\" --build-arg GIT_USERS_NAME=\"`git config user.name`\" --build-arg GIT_USERS_EMAIL=\"`git config user.email`\" --build-arg DEBUG=\"$DEBUG\" --build-arg CHECKOUT_VERSION=\"$CHECKOUT_VERSION\""
+    cat Dockerfile.debug >> Dockerfile
+    echo ""
     while read p; do
         first_word=`echo "$p" | cut -f 1 -d " " -`
         second_word=`echo "$p" | cut -f 2 -d " " -`
@@ -95,11 +102,16 @@ then
         fi
     done <$WD/nao_swift/pepper/build.sh
 else
+    cat Dockerfile.default >> Dockerfile
+    echo ""
     echo "RUN cd /root/src/nao_swift/pepper && \\" >> $WD/Dockerfile
     echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
     echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
     echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
     echo "    ./build.sh -j$PARALLEL$LIBCXXFLAG -s $SWIFT_VERSION" >> $WD/Dockerfile
+    checkout_submodule
 fi
 
-docker image build --build-arg SSH_USER="$SSH_USERNAME" --build-arg GIT_USERS_NAME="`git config user.name`" --build-arg GIT_USERS_EMAIL="`git config user.email`" --build-arg SWIFTVER="$SWIFT_VERSION" --build-arg PARALLEL=$PARALLEL --build-arg DEBUG="$DEBUG" -t mipal-pepper-swift-crosstoolchain-build .
+echo "$ARGS"
+
+docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build .

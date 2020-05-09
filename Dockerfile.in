@@ -37,46 +37,6 @@ RUN cp /root/.bashrc /home/ubuntu/
 RUN cp /root/.profile /home/ubuntu/
 
 #
-# Setup source tree
-#
-RUN mkdir -p /root/src
-COPY .build/nao_swift.tar.gz /root/src/
-RUN cd /root/src && tar -xzf nao_swift.tar.gz
-COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
-RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
-
-ARG DEBUG=0
-ENV DEBUG=$DEBUG
-
-#
-# Configure git repo.
-#
-ARG GIT_USERS_NAME=root
-ENV GIT_USERS_NAME=$GIT_USERS_NAME
-ARG GIT_USERS_EMAIL=root@pepper-swift
-ENV GIT_USERS_EMAIL=$GIT_USERS_EMAIL
-RUN if [ "$DEBUG" = "1" ] ; then cd /root/src/nao_swift && \
-    git config user.name "$GIT_USERS_NAME" && \
-    git config user.email "$GIT_USERS_EMAIL"; fi
-
-#
-# Setup ssh keys.
-#
-ARG SSH_USER
-ENV SSH_USER=$SSH_USER
-RUN mkdir -p /root/.ssh
-COPY .build/* /root/.ssh/
-RUN if [ "$DEBUG" = "1" ] ; then chmod 600 /root/.ssh/*; fi
-RUN if [ "$DEBUG" = "1" ] ; then rm -f /root/.ssh/config; fi
-RUN if [ "$DEBUG" = "1" ] ; then echo "host git.mipal.net" >> /root/.ssh/config && \
-  echo "  HostName git.mipal.net" >> /root/.ssh/config && \
-  echo "  IdentityFile /root/.ssh/id_rsa" >> /root/.ssh/config && \
-  echo "  User ${SSH_USER}" >> /root/.ssh/config; fi
-RUN rm -f /root/.ssh/known_hosts
-RUN touch /root/.ssh/known_hosts
-RUN if [ "$DEBUG" = "1" ] ; then ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts; fi
-
-#
 # Install Swift
 #
 ARG SWIFTVER=5.1
