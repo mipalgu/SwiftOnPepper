@@ -113,6 +113,4 @@ else
     echo "    ./build.sh -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFTVER" >> $WD/Dockerfile
     checkout_submodule
 fi
-command="docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build ."
-echo "$command"
-#eval "$command"
+eval "docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build ."
