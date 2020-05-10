@@ -20,7 +20,6 @@ ARG CHECKOUT_VERSION=$SWIFT_VERSION
 # Setup source tree
 #
 RUN mkdir -p /root/src
-COPY .build/nao_swift.tar.gz /root/src/
 RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift
 RUN cd /root/src/nao_swift && git pull --tags origin && git checkout $CHECKOUT_VERSION
 COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
