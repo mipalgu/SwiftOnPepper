@@ -2,52 +2,7 @@
 set -e
 
 source tags.sh
-
-PARALLEL=1
-SWIFT_VERSION=5.2
-SSH_USERNAME=`whoami`
-DEBUG=0
-KEYFILE=$HOME/.ssh/id_rsa
-
-usage() { echo "Usage: $0 [-c <nao_swift tag>] [-j<value>] [-l] [-s <swift-version>]"; }
-
-while getopts "c:dhj:ls:t:u:" o; do
-    case "${o}" in
-        c)
-            CHECKOUT_VERSION=${OPTARG}
-            ;;
-        d)
-            DEBUG=1
-            ;;
-        h)
-            usage
-            exit 0
-            ;;
-        j)
-            PARALLEL=${OPTARG}
-            ;;
-        k)
-            KEYFILE=${OPTARG}
-            ;;
-        l)
-            LIBCXXFLAG=" -l"
-            ;;
-        s)
-	        SWIFT_VERSION=${OPTARG}
-	        ;;
-        u)
-            SSH_USERNAME=${OPTARG}
-            ;;
-        *)
-            echo "Invalid argument ${o}"
-            usage 1>&2
-            exit 1
-            ;;
-    esac
-done
-
-WD=`pwd`
-BUILD_DIR="$WD/.build"
+source setup.sh
 
 mkdir -p $BUILD_DIR
 
