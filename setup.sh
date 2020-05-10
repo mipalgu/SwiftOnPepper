@@ -77,7 +77,7 @@ while getopts "c:dhj:k:ln:p:s:t:u:" o; do
     esac
 done
 
-NAOQI_SDK=`echo "$NAOQI_SDK_TAR" | cut -f 1 -d "." -`
-CROSS_TOOLCHAIN=`basename "$CROSS_TOOLCHAIN_ZIP" | cut -f 1 -d "." -`
+NAOQI_SDK=`basename "$NAOQI_SDK_TAR" | sed -e "s/.tar.gz//g"`
+CROSS_TOOLCHAIN=`basename "$CROSS_TOOLCHAIN_ZIP" | sed -e "s/.zip//g"`
 
 fi # End SETUP_SH_INCLUDED

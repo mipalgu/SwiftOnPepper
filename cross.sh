@@ -9,8 +9,8 @@ source build.sh
 # Setup prefix
 mkdir -p $PREFIX
 tar -xzvf $NAOQI_SDK_TAR -C $PREFIX
-tar -xzvf $BUILD_DIR/ctc-mipal.tar.gz -C $PREFIX/$NAOQI_SDK/
-tar -xzvf $BUILD_DIR/crosstoolchain.tar.gz -C $PREFIX/$NAOQI_SDK/
+tar -xzvf $BUILD_DIR/ctc-mipal.tar.gz -C $PREFIX/$NAOQI_SDK
+tar -xzvf $BUILD_DIR/crosstoolchain.tar.gz -C $PREFIX/$NAOQI_SDK
 
 # Build a cross binutils
 mkdir -p $SRC_DIR/binutils
