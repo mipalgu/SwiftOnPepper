@@ -97,7 +97,7 @@ then
             echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
             echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
             echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
-            echo "    ./$second_word -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFT_VERSION" >> $WD/Dockerfile
+            echo "    ./$second_word -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFTVER" >> $WD/Dockerfile
         fi
     done <$WD/nao_swift/pepper/build.sh
 else
@@ -110,8 +110,9 @@ else
     echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
     echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
     echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
-    echo "    ./build.sh -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFT_VERSION" >> $WD/Dockerfile
+    echo "    ./build.sh -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFTVER" >> $WD/Dockerfile
     checkout_submodule
 fi
-
-eval "docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build ."
+command="docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build ."
+echo "$command"
+#eval "$command"
