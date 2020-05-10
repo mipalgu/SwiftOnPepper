@@ -7,6 +7,7 @@ PARALLEL=1
 SWIFT_VERSION=5.2
 SSH_USERNAME=`whoami`
 DEBUG=0
+KEYFILE=$HOME/.ssh/id_rsa
 
 usage() { echo "Usage: $0 [-c <nao_swift tag>] [-j<value>] [-l] [-s <swift-version>]"; }
 
@@ -24,6 +25,9 @@ while getopts "c:dhj:ls:t:u:" o; do
             ;;
         j)
             PARALLEL=${OPTARG}
+            ;;
+        k)
+            KEYFILE=${OPTARG}
             ;;
         l)
             LIBCXXFLAG=" -l"
@@ -82,7 +86,8 @@ ARGS="--build-arg SWIFTVER=\"$SWIFT_VERSION\" --build-arg PARALLEL=\"$PARALLEL\"
 
 if [[ "$DEBUG" == 1 ]]
 then
-    ARGS="$ARGS --build-arg SSH_USER=\"$SSH_USERNAME\" --build-arg GIT_USERS_NAME=\"`git config user.name`\" --build-arg GIT_USERS_EMAIL=\"`git config user.email`\" --build-arg DEBUG=\"$DEBUG\" --build-arg CHECKOUT_VERSION=\"$CHECKOUT_VERSION\""
+    cp $KEYFILE $BUILD_DIR/id_rsa
+    ARGS="$ARGS --build-arg SSH_USER=\"$SSH_USERNAME\" --build-arg GIT_USERS_NAME=\"`git config user.name`\" --build-arg GIT_USERS_EMAIL=\"`git config user.email`\" --build-arg CHECKOUT_VERSION=\"$CHECKOUT_VERSION\""
     cat Dockerfile.debug >> Dockerfile
     echo "" >> Dockerfile
     echo "ARG PARALLEL=1" >> Dockerfile
