@@ -1,3 +1,19 @@
+#
+# Setup ssh keys.
+#
+ARG SSH_USER
+ENV SSH_USER=$SSH_USER
+RUN mkdir -p /root/.ssh
+COPY id_rsa /root/.ssh/
+RUN chmod 600 /root/.ssh/*; fi
+RUN rm -f /root/.ssh/config; fi
+RUN echo "host git.mipal.net" >> /root/.ssh/config && \
+  echo "  HostName git.mipal.net" >> /root/.ssh/config && \
+  echo "  IdentityFile /root/.ssh/id_rsa" >> /root/.ssh/config && \
+  echo "  User ${SSH_USER}" >> /root/.ssh/config; fi
+RUN rm -f /root/.ssh/known_hosts
+RUN touch /root/.ssh/known_hosts
+RUN ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts; fi
 ARG CHECKOUT_VERSION=$SWIFT_VERSION
 
 #
@@ -20,20 +36,3 @@ ENV GIT_USERS_EMAIL=$GIT_USERS_EMAIL
 RUN cd /root/src/nao_swift && \
     git config user.name "$GIT_USERS_NAME" && \
     git config user.email "$GIT_USERS_EMAIL"; fi
-
-#
-# Setup ssh keys.
-#
-ARG SSH_USER
-ENV SSH_USER=$SSH_USER
-RUN mkdir -p /root/.ssh
-COPY id_rsa /root/.ssh/
-RUN chmod 600 /root/.ssh/*; fi
-RUN rm -f /root/.ssh/config; fi
-RUN echo "host git.mipal.net" >> /root/.ssh/config && \
-  echo "  HostName git.mipal.net" >> /root/.ssh/config && \
-  echo "  IdentityFile /root/.ssh/id_rsa" >> /root/.ssh/config && \
-  echo "  User ${SSH_USER}" >> /root/.ssh/config; fi
-RUN rm -f /root/.ssh/known_hosts
-RUN touch /root/.ssh/known_hosts
-RUN ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts; fi
