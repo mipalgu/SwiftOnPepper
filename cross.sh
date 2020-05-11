@@ -13,15 +13,31 @@ tar -xzvf $BUILD_DIR/ctc-mipal.tar.gz -C $PREFIX/$NAOQI_SDK
 tar -xzvf $BUILD_DIR/crosstoolchain.tar.gz -C $PREFIX/$NAOQI_SDK
 
 # Build a cross binutils
-mkdir -p $SRC_DIR/binutils
-cd $SRC_DIR/binutils
-wget https://ftp.gnu.org/gnu/binutils/binutils-2.25.tar.gz
-tar -xzvf binutils-2.25.tar.gz
-mkdir build-binutils
-cd build-binutils
-../binutils-2.25/configure --target=i686-aldebaran-linux-gnu --prefix="$PREFIX/$NAOQI_SDK/crosstoolchain/cross/atom" --with-sysroot="$PREFIX/$NAOQI_SDK/crosstoolchain/cross/atom/i686-aldebaran-linux-gnu/sysroot" --enable-gold
-make
-make install
+function build_binutils() {
+    local install_prefix="$PREFIX/$NAOQI_SDK/crosstoolchain/cross/atom"
+    local previous_prefix=`cat "$SRC_DIR/binutils/.binutils"`
+    if [[ "$previous_prefix" != "$install_prefix" ]]
+    then
+        mkdir -p $SRC_DIR/binutils
+        cd $SRC_DIR/binutils
+        if [ ! -f "$SRC_DIR/binutils/binutils-2.25.tar.gz" ]
+        then
+            wget https://ftp.gnu.org/gnu/binutils/binutils-2.25.tar.gz
+            tar -xzvf binutils-2.25.tar.gz
+        fi
+        rm -rf build-binutils
+        mkdir -p build-binutils
+        cd build-binutils
+        ../binutils-2.25/configure --target=i686-aldebaran-linux-gnu --prefix="$install_prefix" --with-sysroot="$install_prefix/i686-aldebaran-linux-gnu/sysroot" --enable-gold
+        make
+        cd ..
+        echo "$install_prefix" > .binutils
+    fi
+    cd $SRC_DIR/binutils/build-binutils
+    make install
+    cd $WD
+}
+build_binutils
 
 # Patch glibc.modulemap
 cd $PREFIX/$NAOQI_SDK/crosstoolchain/staging/i686-aldebaran-linux-gnu/home/nao/swift-tc/lib/swift/linux/i686
