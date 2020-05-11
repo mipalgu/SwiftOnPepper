@@ -8,6 +8,8 @@ SETUP_SH_INCLUDED=yes
 WD=`pwd`
 BUILD_DIR="$WD/.build"
 SRC_DIR="$BUILD_DIR/src"
+CONTEXT_DIR="$BUILD_DIR/context"
+DOCKERFILE=$BUILD_DIR/Dockerfile
 
 function platform_name() {
     unameOut=`uname -s`
@@ -78,6 +80,7 @@ while getopts "c:dhj:k:ln:p:s:t:u:" o; do
 done
 
 NAOQI_SDK=`basename "$NAOQI_SDK_TAR" | sed -e "s/.tar.gz//g"`
-CROSS_TOOLCHAIN=`basename "$CROSS_TOOLCHAIN_ZIP" | sed -e "s/.zip//g"`
+CROSS_TOOLCHAIN_BASENAME=`basename "$CROSS_TOOLCHAIN_ZIP"`
+CROSS_TOOLCHAIN=`echo "$CROSS_TOOLCHAIN_BASENAME" | sed -e "s/.zip//g"`
 
 fi # End SETUP_SH_INCLUDED

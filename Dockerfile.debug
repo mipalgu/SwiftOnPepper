@@ -4,7 +4,7 @@
 ARG SSH_USER
 ENV SSH_USER=$SSH_USER
 RUN mkdir -p /root/.ssh
-COPY .build/id_rsa /root/.ssh/id_rsa
+COPY id_rsa /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/*; fi
 RUN rm -f /root/.ssh/config; fi
 RUN echo "host git.mipal.net" >> /root/.ssh/config && \
@@ -14,16 +14,14 @@ RUN echo "host git.mipal.net" >> /root/.ssh/config && \
 RUN rm -f /root/.ssh/known_hosts
 RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts; fi
-ARG CHECKOUT_VERSION=$SWIFT_VERSION
 
 #
 # Setup source tree
 #
+ARG CHECKOUT_VERSION=$SWIFT_VERSION
 RUN mkdir -p /root/src
 RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift
 RUN cd /root/src/nao_swift && git pull --tags origin && git checkout $CHECKOUT_VERSION
-COPY ctc-linux64-atom-2.5.2.74.zip /root/src/nao_swift/pepper/
-RUN cd /root/src/nao_swift/pepper && unzip ctc-linux64-atom-2.5.2.74.zip
 
 #
 # Configure git repo.
