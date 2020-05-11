@@ -45,14 +45,14 @@ then
     ARGS="$ARGS --build-arg SSH_USER=\"$SSH_USERNAME\" --build-arg GIT_USERS_NAME=\"`git config user.name`\" --build-arg GIT_USERS_EMAIL=\"`git config user.email`\" --build-arg CHECKOUT_VERSION=\"$CHECKOUT_VERSION\""
     cat Dockerfile.debug >> Dockerfile
     echo "" >> Dockerfile
-    echo "ARG PARALLEL=1" >> Dockerfile
-    echo "ARG LIBCXXFLAG=\"\"" >> Dockerfile
-    echo "" >> Dockerfile
 else
     cat Dockerfile.default >> Dockerfile
     echo "" >> Dockerfile
     checkout_submodule
 fi
+echo "ARG PARALLEL=1" >> Dockerfile
+echo "ARG LIBCXXFLAG=\"\"" >> Dockerfile
+echo "" >> Dockerfile
 while read p; do
     first_word=`echo "$p" | cut -f 1 -d " " -`
     second_word=`echo "$p" | cut -f 2 -d " " -`
