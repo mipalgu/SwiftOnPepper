@@ -55,7 +55,7 @@ while getopts "c:dhj:k:ln:p:s:t:u:" o; do
             LIBCXXFLAG=" -l"
             ;;
         n)
-            NAOQI_SDK=${OPTARG}
+            NAOQI_SDK_TAR=${OPTARG}
             ;;
         p)
             PREFIX=${OPTARG}
