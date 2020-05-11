@@ -48,29 +48,22 @@ then
     echo "ARG PARALLEL=1" >> Dockerfile
     echo "ARG LIBCXXFLAG=\"\"" >> Dockerfile
     echo "" >> Dockerfile
-    while read p; do
-        first_word=`echo "$p" | cut -f 1 -d " " -`
-        second_word=`echo "$p" | cut -f 2 -d " " -`
-        if [[ "$first_word" == "source" ]]
-        then
-            echo "RUN cd /root/src/nao_swift/pepper && \\" >> $WD/Dockerfile
-            echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
-            echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
-            echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
-            echo "    ./$second_word -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFTVER" >> $WD/Dockerfile
-        fi
-    done <$WD/nao_swift/pepper/build.sh
 else
     cat Dockerfile.default >> Dockerfile
     echo "" >> Dockerfile
-    echo "ARG PARALLEL=1" >> Dockerfile
-    echo "ARG LIBCXXFLAG=\"\"" >> Dockerfile
-    echo "" >> Dockerfile
-    echo "RUN cd /root/src/nao_swift/pepper && \\" >> $WD/Dockerfile
-    echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
-    echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
-    echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
-    echo "    ./build.sh -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFTVER" >> $WD/Dockerfile
     checkout_submodule
 fi
+while read p; do
+    first_word=`echo "$p" | cut -f 1 -d " " -`
+    second_word=`echo "$p" | cut -f 2 -d " " -`
+    if [[ "$first_word" == "source" ]]
+    then
+        echo "RUN cd /root/src/nao_swift/pepper && \\" >> $WD/Dockerfile
+        echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $WD/Dockerfile
+        echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $WD/Dockerfile
+        echo "    eval "\$\(swiftenv init -\)" && \\" >> $WD/Dockerfile
+        echo "    ./$second_word -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFTVER" >> $WD/Dockerfile
+    fi
+done <$WD/nao_swift/pepper/build.sh
+
 eval "docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build ."
