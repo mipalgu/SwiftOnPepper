@@ -43,5 +43,15 @@ ARG SWIFTVER=5.1
 ENV SWIFTVER=$SWIFTVER
 
 RUN bash -c '\
-    SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv install $SWIFTVER \
-    && SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv global $SWIFTVER'
+    cd $SWIFTENV_ROOT_ARG && \
+    mkdir -p versions && \
+    cd versions && \
+    wget https://swift.org/builds/swift-$SWIFTVER-release/ubuntu1804/swift-$SWIFTVER-RELEASE/swift-$SWIFTVER-RELEASE-ubuntu18.04.tar.gz'
+
+RUN bash -c '\
+    cd $SWIFTENV_ROOT_ARG/versions && \
+    tar -xzvf swift-$SWIFTVER-RELEASE-ubuntu18.04.tar.gz && \
+    mv swift-$SWIFTVER-RELEASE-ubuntu18.04 swift-$SWIFTVER && \
+    SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv versions'
+
+RUN bash -c 'SWIFTENV_ROOT="$SWIFTENV_ROOT_ARG" $SWIFTENV_ROOT_ARG/bin/swiftenv global $SWIFTVER'
