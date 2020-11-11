@@ -1,0 +1,6 @@
+#
+# Setup source tree
+#
+RUN mkdir -p /root/src
+COPY nao_swift.tar.gz /root/src/
+RUN cd /root/src && tar -xzf nao_swift.tar.gz
