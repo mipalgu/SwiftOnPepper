@@ -5,6 +5,7 @@ source tags.sh
 source setup.sh
 
 mkdir -p $BUILD_DIR
+touch $CONTEXT_DIR
 rm -r $CONTEXT_DIR
 mkdir -p $CONTEXT_DIR
 
