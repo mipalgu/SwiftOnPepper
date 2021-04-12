@@ -20,7 +20,7 @@ RUN ssh-keyscan git.mipal.net >> /root/.ssh/known_hosts; fi
 #
 ARG CHECKOUT_VERSION=$SWIFT_VERSION
 RUN mkdir -p /root/src
-RUN cd /root/src && git clone ssh://git.mipal.net/git/nao_swift
+RUN cd /root/src && git clone ssh://git.mipal.net/Users/Shared/git/nao_swift
 RUN cd /root/src/nao_swift && git pull --tags origin && git checkout $CHECKOUT_VERSION
 
 #

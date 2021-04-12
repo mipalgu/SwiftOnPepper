@@ -55,17 +55,17 @@ echo "" >> $DOCKERFILE
 echo "ARG PARALLEL=1" >> $DOCKERFILE
 echo "ARG LIBCXXFLAG=\"\"" >> $DOCKERFILE
 echo "" >> $DOCKERFILE
-while read p; do
-    first_word=`echo "$p" | cut -f 1 -d " " -`
-    second_word=`echo "$p" | cut -f 2 -d " " -`
-    if [[ "$first_word" == "source" ]]
-    then
-        echo "RUN cd /root/src/nao_swift/pepper && \\" >> $DOCKERFILE
-        echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $DOCKERFILE
-        echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $DOCKERFILE
-        echo "    eval "\$\(swiftenv init -\)" && \\" >> $DOCKERFILE
-        echo "    ./$second_word -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFTVER" >> $DOCKERFILE
-    fi
-done <$WD/nao_swift/pepper/build.sh
+#while read p; do
+#    first_word=`echo "$p" | cut -f 1 -d " " -`
+#    second_word=`echo "$p" | cut -f 2 -d " " -`
+#    if [[ "$first_word" == "source" ]]
+#    then
+#        echo "RUN cd /root/src/nao_swift/pepper && \\" >> $DOCKERFILE
+#        echo "    export SWIFTENV_ROOT="\$SWIFTENV_ROOT_ARG" && \\" >> $DOCKERFILE
+#        echo "    export PATH="\$SWIFTENV_ROOT/bin:\$PATH" && \\" >> $DOCKERFILE
+#        echo "    eval "\$\(swiftenv init -\)" && \\" >> $DOCKERFILE
+#        echo "    /usr/bin/env bash $second_word -j\$PARALLEL\$LIBCXXFLAG -s \$SWIFTVER" >> $DOCKERFILE
+#    fi
+#done <$WD/nao_swift/pepper/build.sh
 
 eval "docker image build $ARGS -t mipal-pepper-swift-crosstoolchain-build -f $DOCKERFILE $CONTEXT_DIR"

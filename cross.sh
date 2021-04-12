@@ -2,15 +2,15 @@
 set -e
 
 source setup.sh
-source build.sh
-./copy.sh $BUILD_DIR
+#source build.sh
+#./copy.sh $BUILD_DIR
 
 
 # Setup prefix
-mkdir -p $PREFIX
-tar -xzvf $NAOQI_SDK_TAR -C $PREFIX
-tar -xzvf $BUILD_DIR/ctc-mipal.tar.gz -C $PREFIX/$NAOQI_SDK
-tar -xzvf $BUILD_DIR/crosstoolchain.tar.gz -C $PREFIX/$NAOQI_SDK
+#mkdir -p $PREFIX
+#tar -xzvf $NAOQI_SDK_TAR -C $PREFIX
+#tar -xzvf $BUILD_DIR/ctc-mipal.tar.gz -C $PREFIX/$NAOQI_SDK
+#tar -xzvf $BUILD_DIR/crosstoolchain.tar.gz -C $PREFIX/$NAOQI_SDK
 
 # Build a cross binutils
 function build_binutils() {
@@ -37,7 +37,7 @@ function build_binutils() {
     make install
     cd $WD
 }
-build_binutils
+#build_binutils
 
 # Patch glibc.modulemap
 cd $PREFIX/$NAOQI_SDK/crosstoolchain/staging/i686-aldebaran-linux-gnu/home/nao/swift-tc/lib/swift/linux/i686
@@ -46,9 +46,16 @@ sed -e "s@header \".*/usr/@header \"$PREFIX/$NAOQI_SDK/crosstoolchain/staging/i6
 
 # Symlink some files
 cd $PREFIX/$NAOQI_SDK/crosstoolchain/staging/i686-aldebaran-linux-gnu/usr/lib
-ln -s ../../../../lib/gcc/i686-aldebaran-linux-gnu/4.9.2/crtbegin.o .
-ln -s ../../../../lib/gcc/i686-aldebaran-linux-gnu/4.9.2/crtbeginS.o .
-ln -s ../../../../lib/gcc/i686-aldebaran-linux-gnu/4.9.2/crtendS.o .
-ln -s ../../../../lib/gcc/i686-aldebaran-linux-gnu/4.9.2/crtend.o .
+
+function symlink_if_doesnt_exist() {
+    if [ ! -f $1 ]; then
+        ln -s ../../../../lib/gcc/i686-aldebaran-linux-gnu/4.9.2/$1 .
+    fi
+}
+
+symlink_if_doesnt_exist crtbegin.so
+symlink_if_doesnt_exist crtbeginS.so
+symlink_if_doesnt_exist crtend.so
+symlink_if_doesnt_exist crtendS.so
 
 cd $WD
